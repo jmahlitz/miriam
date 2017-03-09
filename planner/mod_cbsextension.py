@@ -10,8 +10,6 @@ from planner.mod import Module
 from planner.route import Route, Car
 from planner.simulation import list_hash
 
-import os
-
 from threading import Lock
 
 FORMAT = "%(asctime)s %(levelname)s %(message)s"
@@ -26,6 +24,7 @@ def get_car_i(cars: list, car: Car):
 
 
 def plan_process(pipe, agent_pos, jobs, alloc_jobs, idle_goals, grid, fname):
+    #calculates the new paths
     try:
         (agent_job,
          agent_idle,
@@ -52,7 +51,7 @@ def plan_process(pipe, agent_pos, jobs, alloc_jobs, idle_goals, grid, fname):
                paths))
 
 
-class Cbsext(Module):
+class Cbsext(Module): # Einstieg in das Modul
     def __init__(self, grid):
         # params
         self.agent_job = ()
@@ -64,7 +63,6 @@ class Cbsext(Module):
         #self.fname = "planner/process_test.pkl" #ToDo: Anpassung aller Working directories.
         self.fname = "../process_test.pkl" # Nutzen wenn process_test.py ausgefueht
 
-        print (os.path.dirname(os.path.realpath(__file__)))
         # if os.path.exists(self.fname):
         #     os.remove(self.fname)
         self.plan_params_hash = False
@@ -103,8 +101,8 @@ class Cbsext(Module):
         agent_pos = []
         for c in cars:
             t = c.to_tuple()
-            assert not t[0].__class__ is np.ndarray
-            assert t[0] == c.pose[0], "Problems with pose"
+            assert not t[0].__class__ is np.ndarray # raise if t[0] is np.ndarray
+            assert t[0] == c.pose[0], "Problems with pose" # raise if t != c
             agent_pos.append(t)
 
         jobs = []
@@ -115,7 +113,7 @@ class Cbsext(Module):
                 jobs.append(r.to_job_tuple())
                 if r.is_on_route():
                     alloc_jobs.append((get_car_i(cars, r.car), i_route))
-
+        #are idle goals for example agvs loading stations ?
         idle_goals = [((0, 0), (15, 3)),
                       ((4, 0), (15, 3),),
                       ((9, 0), (15, 3),),
@@ -138,6 +136,7 @@ class Cbsext(Module):
                                )
         self.process.name = "cbs_ext planner"
         self.process.start()
+
         logging.debug("process started")
         (self.agent_job,
          self.agent_idle,

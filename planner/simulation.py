@@ -166,10 +166,10 @@ class SimpSim(QtCore.QThread):
                       " | or:" + str(n_on_route) +
                       " | f:" + str(n_finished))
 
-    def check_free(self, car: Car, pose: ndarray):
-        cars_to_check = self.cars.copy()
-        cars_to_check.remove(car)
+    def check_free(self, car: Car, pose: ndarray): # prüfe ob Position frei ?
+        cars_to_check = self.cars.copy() #kopiere aktuelle referenz (warum braucht man das hier)
+        cars_to_check.remove(car) # entferne zu pruefendes aus liste
         for c in cars_to_check:
-            if c.pose[0] == pose[0] and c.pose[1] == pose[1]:
+            if (( c.pose[0] == pose[0] and c.pose[1] == pose[1] )): ## pruefe ob neue location von AGV blockiert
                 return False
         return True

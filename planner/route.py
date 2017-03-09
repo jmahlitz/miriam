@@ -93,18 +93,20 @@ class Route(object):
         assert i_next_round <= len(self.car.paths) + 5, "shooting far over goal"
         i_next_round = min(i_next_round, len(self.car.paths) - 1)  # e.g. 3
         assert not self.is_finished(), "Should not be finished"
+
         while self.car is None:
             time.sleep(.1)
             logging.warning("Waiting for car to be assigned")
+
         for _i in range(i_prev_round, i_next_round + 1):  # e.g. [3]
             if (self.car.paths[_i][0:2] == tuple(self.start)) or \
-                    (tuple(self.car.pose) == tuple(self.start)):
+                    (tuple(self.car.pose) == tuple(self.start)): # @start ?
                 self.at_start()
             elif ((self.car.paths[_i][0:2] == tuple(self.goal)) & self.is_on_route()) or \
                     (tuple(self.car.pose) == tuple(self.start)):  # @ goal
                 self.at_goal()
                 break
-            # somewhere else
+            # agv moves somewhere else
             if self.is_running():
                 self.car.set_pose(np.array(self.car.paths[_i][0:2]))
 
@@ -167,6 +169,7 @@ class Car(object):
         self.sim = s
 
         # assert s.__class__ is SimpSim, "Pass the simulation object to the new car"
+        # each car has a random start location
         self.pose = array([
             4, 3 + Car.nextId
             # random.randint(0, s.area.shape[0]),
@@ -186,7 +189,7 @@ class Car(object):
         self.paths = None
         self.lock = Lock()
 
-    def set_pose(self, pose):
+    def set_pose(self, pose): #move agv to new pose
         self.lock.acquire()
         if self.sim.check_free(self, pose):
             self.pose = pose
