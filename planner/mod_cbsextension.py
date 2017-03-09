@@ -62,7 +62,7 @@ class Cbsext(Module):
 
         # data
         #self.fname = "planner/process_test.pkl" #ToDo: Anpassung aller Working directories.
-        self.fname = "../process_test.pkl" # Nutzen wenn process_test.py ausgefuehrt
+        self.fname = "../process_test.pkl" # Nutzen wenn process_test.py ausgefueht
 
         print (os.path.dirname(os.path.realpath(__file__)))
         # if os.path.exists(self.fname):
@@ -92,7 +92,7 @@ class Cbsext(Module):
         self.lock.acquire()
         routes = self.get_routes_to_plan(routes)
         if list_hash(cars + routes) == self.plan_params_hash:
-            self.lock.release()main
+            self.lock.release()
             return
 
         if self.process:
