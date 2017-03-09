@@ -10,6 +10,8 @@ from planner.mod import Module
 from planner.route import Route, Car
 from planner.simulation import list_hash
 
+import os
+
 from threading import Lock
 
 FORMAT = "%(asctime)s %(levelname)s %(message)s"
@@ -59,7 +61,10 @@ class Cbsext(Module):
         self.grid = grid
 
         # data
-        self.fname = "planner/process_test.pkl"
+        #self.fname = "planner/process_test.pkl" #ToDo: Anpassung aller Working directories.
+        self.fname = "../process_test.pkl" # Nutzen wenn process_test.py ausgefuehrt
+
+        print (os.path.dirname(os.path.realpath(__file__)))
         # if os.path.exists(self.fname):
         #     os.remove(self.fname)
         self.plan_params_hash = False
@@ -87,7 +92,7 @@ class Cbsext(Module):
         self.lock.acquire()
         routes = self.get_routes_to_plan(routes)
         if list_hash(cars + routes) == self.plan_params_hash:
-            self.lock.release()
+            self.lock.release()main
             return
 
         if self.process:
