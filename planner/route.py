@@ -17,7 +17,7 @@ class Route(object):
 
     def __init__(self, start, goal, _id, s):
         self.lock = Lock()
-        self.sim = s
+        self.sim = s # typeOf SimpSim
 
         self.id = _id
         self.state = RouteState.QUEUED
@@ -91,21 +91,23 @@ class Route(object):
             time.sleep(.1)
             logging.warning("Waiting for car to be assigned")
 
-        for _i in range(i_prev_round, i_next_round + 1):  # from prev to next including next
-            if (self.car.paths[_i][0:2] == tuple(self.start)) or \
+        for i in range(i_prev_round, i_next_round + 1):  # from prev to next including next
+            if (self.car.paths[i][0:2] == tuple(self.start)) or \
                     (tuple(self.car.pose) == tuple(self.start)): # set state at_start()
                 self.at_start()
-            elif ((self.car.paths[_i][0:2] == tuple(self.goal)) & self.is_on_route()) or \
+            elif ((self.car.paths[i][0:2] == tuple(self.goal)) & self.is_on_route()) or \
                     (tuple(self.car.pose) == tuple(self.start)):  # set state at_goal
                 self.at_goal()
                 break
-            if self.is_running(): #agv is moving on its current path
-                self.car.set_pose(np.array(self.car.paths[_i][0:2]))
+            if self.is_running(): #agv is moving on its path
+                #check if route is blocked ? set pose should return in future
+                if (not self.car.set_pose(np.array(self.car.paths[i][0:2]))): # if Path is Blocked retry next time
+                    self.car.path_index -= stepSize;
 
-        self.sim.emit(QtCore.SIGNAL("update_route(PyQt_PyObject)"), self)
+        self.sim.emit(QtCore.SIGNAL("update_route(PyQt_PyObject)"), self) # wo befindet sich entsprechende Funktion ?
 
         if self.sim.msb_select:
-            emit_car(msb, self.car)
+            emit_car(msb, self.car) #logs current position of agv
         self.lock.release()
 
     def at_goal(self):
@@ -183,13 +185,20 @@ class Car(object):
 
     def set_pose(self, pose): #move agv to new pose
         self.lock.acquire()
+
         if self.sim.check_free(self, pose):
             self.pose = pose
             self.sim.emit(QtCore.SIGNAL("update_car(PyQt_PyObject)"), self)
             logging.info("Car " + str(self.id) + " @ " + str(self.pose))
+
+            self.lock.release()
+            return True
+
         else:
-            logging.warning("Car " + str(self.id) + " BLOCKED @ " + str(self.pose))
-        self.lock.release()
+            logging.warning("Car " + str(self.id) +" @ " + str(self.pose) + " BLOCKED @ " + str(pose))
+
+            self.lock.release()
+            return False
 
     def set_paths(self, _paths):
         self.lock.acquire()
