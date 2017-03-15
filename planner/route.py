@@ -73,41 +73,33 @@ class Route(object):
                 _car.route.car = None  # not on that route any more
 
     def new_step(self, stepSize):
+        # HOW is stepSize defined: ?
         self.lock.acquire()
         assert self.car, "Should have a car"
-        i_prev = self.car.i
-        self.car.i += stepSize
-        i_prev_round = int(np.ceil(i_prev))
-        i_next_round = int(np.floor(self.car.i))
+        #prev index = aktueller index pfad i
+        i_prev = self.car.path_index
+        self.car.path_index += stepSize
 
-        # e.g.
+        i_prev_round = int(np.ceil(i_prev)) #aufrunden auf Ganzzahl
+        i_next_round = int(np.floor(self.car.path_index)) #abrunden auf Ganzzahl
 
-        # len() = 4 ..
-        # 0    1     2     3
-        #                ^   ^
-        #           i_prev   car.i
-        #              1.7   2.2
-
-        # -> consider pos of t = 3
-
-        assert i_next_round <= len(self.car.paths) + 5, "shooting far over goal"
-        i_next_round = min(i_next_round, len(self.car.paths) - 1)  # e.g. 3
-        assert not self.is_finished(), "Should not be finished"
+        assert i_next_round <= len(self.car.paths) + 5, "shooting far over goal" # check for count error
+        i_next_round = min(i_next_round, len(self.car.paths) - 1)  # make sure no count error applies
+        assert not self.is_finished(), "Should not be finished" # make totally sure that paths are not in finished state
 
         while self.car is None:
             time.sleep(.1)
             logging.warning("Waiting for car to be assigned")
 
-        for _i in range(i_prev_round, i_next_round + 1):  # e.g. [3]
+        for _i in range(i_prev_round, i_next_round + 1):  # from prev to next including next
             if (self.car.paths[_i][0:2] == tuple(self.start)) or \
-                    (tuple(self.car.pose) == tuple(self.start)): # @start ?
+                    (tuple(self.car.pose) == tuple(self.start)): # set state at_start()
                 self.at_start()
             elif ((self.car.paths[_i][0:2] == tuple(self.goal)) & self.is_on_route()) or \
-                    (tuple(self.car.pose) == tuple(self.start)):  # @ goal
+                    (tuple(self.car.pose) == tuple(self.start)):  # set state at_goal
                 self.at_goal()
                 break
-            # agv moves somewhere else
-            if self.is_running():
+            if self.is_running(): #agv is moving on its current path
                 self.car.set_pose(np.array(self.car.paths[_i][0:2]))
 
         self.sim.emit(QtCore.SIGNAL("update_route(PyQt_PyObject)"), self)
@@ -201,7 +193,7 @@ class Car(object):
 
     def set_paths(self, _paths):
         self.lock.acquire()
-        self.i = 0
+        self.path_index = 0
         self.paths = []
         for path in _paths:
             self.paths += path

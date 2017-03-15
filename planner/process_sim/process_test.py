@@ -139,7 +139,7 @@ def __read_stations(): # private function for importing stations
 
 if __name__ == "__main__":
     #Start different algorithms
-    t_nearest = test_process_nearest() # works but has collisions
+    #t_nearest = test_process_nearest() # works but has collisions
     t_cbsext = test_process_cbsext() # cant find pkl file
     t_random = test_process_random()
     # print results of each testrun
