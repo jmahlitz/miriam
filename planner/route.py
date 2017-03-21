@@ -8,9 +8,8 @@ import numpy as np
 from PyQt4 import QtCore
 from numpy import linalg
 from numpy.core.numeric import ndarray, array
-
+#import planner.process_sim.process_test as process_test
 msb = None
-
 
 class Route(object):
     """a route to be simulated"""
@@ -18,17 +17,14 @@ class Route(object):
     def __init__(self, start, goal, _id, s):
         self.lock = Lock()
         self.sim = s # typeOf SimpSim
-
-        self.id = _id
+        self.id = _id # wahrscheinlich laufende unique id
         self.state = RouteState.QUEUED
 
         assert start.__class__ is ndarray, 'Start needs to be a numpy.ndarray'
         self.start = start
         assert goal.__class__ is ndarray, 'Goal needs to be a numpy.ndarray'
         self.goal = goal
-
         self.car = None
-
         self.vector = goal - start
         self.distance = linalg.norm(self.vector)
 
@@ -100,9 +96,9 @@ class Route(object):
                 self.at_goal()
                 break
             if self.is_running(): #agv is moving on its path
-                #check if route is blocked ? set pose should return in future
                 if (not self.car.set_pose(np.array(self.car.paths[i][0:2]))): # if Path is Blocked retry next time
-                    self.car.path_index -= stepSize;
+                    #self.car.path_index -= stepSize;
+                    pass
 
         self.sim.emit(QtCore.SIGNAL("update_route(PyQt_PyObject)"), self) # wo befindet sich entsprechende Funktion ?
 
@@ -190,13 +186,14 @@ class Car(object):
             self.pose = pose
             self.sim.emit(QtCore.SIGNAL("update_car(PyQt_PyObject)"), self)
             logging.info("Car " + str(self.id) + " @ " + str(self.pose))
+            #process_test.free_Map(pose[0], pose[1])
 
             self.lock.release()
             return True
 
         else:
             logging.warning("Car " + str(self.id) +" @ " + str(self.pose) + " BLOCKED @ " + str(pose))
-
+            #process_test.block_Map(pose[0],pose[1])
             self.lock.release()
             return False
 

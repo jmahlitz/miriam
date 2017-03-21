@@ -16,16 +16,15 @@ FORMAT = "%(asctime)s %(levelname)s %(message)s"
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 logging.getLogger("apscheduler").setLevel(logging.WARN)
 
-
 def get_car_i(cars: list, car: Car):
     for i_agent in range(len(cars)):
         if car == cars[i_agent]:
             return i_agent
 
-
 def plan_process(pipe, agent_pos, jobs, alloc_jobs, idle_goals, grid, fname):
     #calculates the new paths
     try:
+        # Was passiert hier ? siehe cbs_ext:plan.py
         (agent_job,
          agent_idle,
          paths) = plan(agent_pos,
@@ -49,7 +48,6 @@ def plan_process(pipe, agent_pos, jobs, alloc_jobs, idle_goals, grid, fname):
     pipe.send((agent_job,
                agent_idle,
                paths))
-
 
 class Cbsext(Module): # Einstieg in das Modul
     def __init__(self, grid):
@@ -113,6 +111,8 @@ class Cbsext(Module): # Einstieg in das Modul
                 jobs.append(r.to_job_tuple())
                 if r.is_on_route():
                     alloc_jobs.append((get_car_i(cars, r.car), i_route))
+
+
         #are idle goals for example agvs loading stations ?
         idle_goals = [((0, 0), (15, 3)),
                       ((4, 0), (15, 3),),

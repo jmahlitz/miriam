@@ -19,7 +19,10 @@ logging.getLogger("apscheduler").setLevel(logging.WARN)
 t_step = .1 # sim stepsize
 x_res = 10 # size of map in x
 y_res = 10 # size of map in y
-_map = np.zeros([x_res, y_res, 51]) # create map of size x*y filled with zeroes (why 51 ? )
+_map = np.zeros([x_res, y_res]) # create map of size x*y filled with zeroes (51 is the representation of time )
+print(_map)
+# If Map entry is 0 = way is empty
+# If Map entry is -1 = way is blocked
 ### end global variables
 
 def run(agv_sim, stations, flow, products_todo):
@@ -84,20 +87,6 @@ def run_with_module(mod, products_todo=3, n_agv=2):
     agv_sim.stop_sim()
     return n
 
-# UNUSED CODE
-# def test_benchmark(): # init which tells, number of products and amount of agvs
-#     durations = np.zeros(2)
-#     modules = [Nearest(_map), Cbsext(_map)]
-#     for i_mod in range(len(modules)):
-#         try:
-#             durations[i_mod] = run_with_module(modules[i_mod], products_todo=3, n_agv=2)
-#         except Exception as e:
-#             logging.error("Exception on simulation level\n" + str(e))
-#
-#     print("RESULT:\n for ..")
-#     print("modules: " + str(modules))
-#     print(durations)
-
 def __read_flow(): # private function for importing product flow
     #Eingefuegt 08.03.2017 jm
     flow = list()
@@ -139,8 +128,8 @@ def __read_stations(): # private function for importing stations
 
 if __name__ == "__main__":
     #Start different algorithms
-    t_nearest = test_process_nearest() # works but has collisions
     t_cbsext = test_process_cbsext() # cant find pkl file
+    t_nearest = test_process_nearest() # works but has collisions
     t_random = test_process_random()
     # print results of each testrun
     print("Random:", str(t_random),

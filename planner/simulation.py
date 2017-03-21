@@ -50,7 +50,7 @@ class SimpSim(QtCore.QThread):
 
         self.area = zeros([1])
         self.number_agvs = 1
-        self.module = _mod
+        self.module = _mod # enthält das zur Sim verwendete Module, dieses enthält map
 
         SimpSim.scheduler.add_job(
             func=self.iterate,
@@ -166,7 +166,14 @@ class SimpSim(QtCore.QThread):
                       " | or:" + str(n_on_route) +
                       " | f:" + str(n_finished))
 
-    def check_free(self, car: Car, pose: ndarray): # prüfe ob Position frei ?
+    def check_free(self, car: Car, pose: ndarray): # Car = car , ndarray = zielposition
+        # baue hier Gridupdate ein
+        tmp_cars = self.cars.copy();
+        self.module.free_Map();
+        for grid_car in tmp_cars:
+            self.module.block_Map(grid_car.pose[0],grid_car.pose[1])
+        self.module.print_Map();
+
         cars_to_check = self.cars.copy() #kopiere aktuelle referenz (warum braucht man das hier)
         cars_to_check.remove(car) # entferne zu pruefendes aus liste
         for c in cars_to_check:

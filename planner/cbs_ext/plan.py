@@ -17,7 +17,6 @@ plt.style.use('bmh')
 
 path_save = {}
 
-
 def plan(agent_pos: list, jobs: list, alloc_jobs: list, idle_goals: list, grid: np.array, plot: bool = False,
          filename: str = 'path_save.pkl'):
     """
