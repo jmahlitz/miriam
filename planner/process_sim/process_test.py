@@ -46,9 +46,12 @@ def run(agv_sim, stations, flow, products_todo):
                     print("PRODUCT %d FINISHED" % (p + 1))
                 elif state[p] < len(flow) - 1:  # process at station is still running
                     if (t_left[p] <= 0) & (blocked[int(state[p])] == p):
+
+                        #Starte berechnung der Routen/Jobs
                         agv_sim.new_job(np.array(stations[flow[int(state[p])][0]], dtype=int),
                                         np.array(stations[flow[int(state[p]) + 1][0]], dtype=int),
                                         hash(p + 100 * state[p]))
+
                         blocked[int(state[p])] = -1
                         state[p] += .5
                         print("PRODUCT %d in state %1.1f" % (p + 1, state[p]))

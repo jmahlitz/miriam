@@ -125,22 +125,15 @@ class Cbsext(Module): # Einstieg in das Modul
 
         planning_start = datetime.datetime.now()
         parent_conn, child_conn = Pipe()
-        self.process = Process(target=plan_process,
-                               args=(child_conn,
-                                     agent_pos,
-                                     jobs,
-                                     alloc_jobs,
-                                     idle_goals,
-                                     self.grid,
-                                     self.fname)
-                               )
+        ###
+        ##
+        # Hier werden neue Pfade generiert!
+        self.process = Process(target=plan_process, args=(child_conn, agent_pos, jobs, alloc_jobs, idle_goals, self.grid, self.fname))
         self.process.name = "cbs_ext planner"
         self.process.start()
-
         logging.debug("process started")
-        (self.agent_job,
-         self.agent_idle,
-         self.paths) = parent_conn.recv()
+        #Entgegennehmen der neuen Pfade
+        (self.agent_job, self.agent_idle, self.paths) = parent_conn.recv()
         logging.debug("process received")
         self.process.join(timeout=1)
         logging.debug("process joined")

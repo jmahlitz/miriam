@@ -103,10 +103,12 @@ class SimpSim(QtCore.QThread):
         logging.info('i*SimTime= ' + str(SimpSim.i * SimpSim.simTime))
         logging.info('missing: ' + str(time.time() - self.startTime - SimpSim.i * SimpSim.simTime) + 's')
 
-    def new_job(self, a, b, job_id):
+    def new_job(self, a, b, job_id): # wird von process_test ausgelöst bspw. stat0 nach stat1
         self.lock.acquire()
-        SimpSim.routes.append(Route(a, b, job_id, self))
-        self.module.new_job(SimpSim.cars, SimpSim.routes)
+
+        SimpSim.routes.append(Route(a, b, job_id, self))# Speichere die entsprechenden Routen
+        self.module.new_job(SimpSim.cars, SimpSim.routes) # Löst einmalige Generierung der Pfade aus
+
         self.lock.release()
 
     def is_finished(self, _id):
