@@ -14,7 +14,7 @@ det = False
 
 if det:
     """Scale of map (min: 1)"""
-    s = 2
+    s = 1
 
     _grid = np.zeros([s * 10, s * 10, s * 50])
     _grid[:s * 8, s * 2, :] = -1

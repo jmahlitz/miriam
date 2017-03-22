@@ -87,6 +87,7 @@ class Route(object):
             time.sleep(.1)
             logging.warning("Waiting for car to be assigned")
 
+        #Problem: Sim macht ein Auto nach dem Anderen, der Planer plant aber simultan für beide
         for i in range(i_prev_round, i_next_round + 1):  # from prev to next including next
             if (self.car.paths[i][0:2] == tuple(self.start)) or \
                     (tuple(self.car.pose) == tuple(self.start)): # set state at_start()

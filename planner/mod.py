@@ -18,10 +18,13 @@ class Module:
         self.grid = new_Map
 
     def block_Map(self,pos_x, pos_y):
-        self.grid[pos_x, pos_y] = -1
+        self.grid[pos_x, pos_y, 0] = -1
 
     def free_Map(self):
-        self.grid.fill(0)
+        self.grid[:,:,0].fill(0)
 
     def print_Map(self):
-        print (self.grid)
+        #print( " Yolo")
+        #print (self.grid.shape)
+        print("try ", self.grid[:,:,0])
+        pass

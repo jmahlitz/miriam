@@ -125,6 +125,7 @@ class SimpSim(QtCore.QThread):
         try:
             if SimpSim.running:
                 self.work_routes()
+
                 for j in self.routes:
                     if j.is_running():
                         j.new_step(
@@ -132,6 +133,7 @@ class SimpSim(QtCore.QThread):
                             SimpSim.speedMultiplier *
                             SimpSim.simTime
                         )
+
                 SimpSim.i += 1
         except Exception as _e:
             logging.error("ERROR:" + str(_e))

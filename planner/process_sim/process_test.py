@@ -19,7 +19,7 @@ logging.getLogger("apscheduler").setLevel(logging.WARN)
 t_step = .1 # sim stepsize
 x_res = 10 # size of map in x
 y_res = 10 # size of map in y
-_map = np.zeros([x_res, y_res]) # create map of size x*y filled with zeroes (51 is the representation of time )
+_map = np.zeros([x_res, y_res, 51]) # create map of size x*y filled with zeroes (51 is the representation of time )
 print(_map)
 # If Map entry is 0 = way is empty
 # If Map entry is -1 = way is blocked
