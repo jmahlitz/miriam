@@ -4,6 +4,7 @@ from multiprocessing import Pipe
 from multiprocessing import Process
 import time
 import numpy as np
+import os
 
 from planner.cbs_ext.plan import plan, get_paths, comp2condition, comp2state
 from planner.mod import Module
@@ -59,12 +60,19 @@ class Cbsext(Module):
         self.grid = grid
 
         # data
-        self.fname = "planner/process_test.pkl"
+
+        working_dir = os.getcwd().split("/")
+        if (( working_dir[working_dir.__len__()-1] == "process_sim" )): # dynamicly find process_test.pkl
+            self.fname = "../process_test.pkl"
+        else:
+            self.fname = "planner/process_test.pkl"
+
         # if os.path.exists(self.fname):
         #     os.remove(self.fname)
         self.plan_params_hash = False
         self.process = False
         self.lock = Lock()
+
 
     def which_car(self, cars: list, route_todo: Route, routes: list) -> Car:
         routes = self.get_routes_to_plan(routes)
